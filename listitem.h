@@ -20,7 +20,7 @@ public:
     QString getDescription() const;
 
     void setPriorityLevel();
-    int getPriorityLevel();
+    int getPriorityLevel() const;
 
     void setCanStart(bool b);
     bool getCanStart();
@@ -36,6 +36,10 @@ public:
     QVector<Tag> getTags() const;
 
     QJsonObject toJson() const;
+
+    bool operator==(const ListItem &other) const;
+
+    QVector<SubTask> getSubTasks() const;
 
 
 

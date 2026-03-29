@@ -1,8 +1,9 @@
 #include "subtask.h"
 #include <qjsonobject.h>
 
-SubTask::SubTask(QString s) {
+SubTask::SubTask(QString s, bool c) {
     title = s;
+    completed = c;
 }
 
 

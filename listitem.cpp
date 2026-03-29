@@ -19,6 +19,14 @@ ListItem::ListItem() {
 
 }
 
+QString ListItem::getDescription() const {
+    return description;
+}
+
+int ListItem::getPriorityLevel() const {
+    return priorityLevel;
+}
+
 QVector<Tag> ListItem::getTags() const{
     return tags;
 }
@@ -33,6 +41,22 @@ QDateTime ListItem::getDueDate() const{
 
 QDate ListItem::getStartDate() const {
     return startDate;
+}
+
+bool ListItem::getCanStart() {
+    return getStartDate() <= QDate::currentDate();
+}
+
+bool ListItem::getCompleted() {
+    return completed;
+}
+
+void ListItem::setCompleted(bool b) {
+    completed = b;
+}
+
+QVector<SubTask> ListItem::getSubTasks() const{
+    return subTasks;
 }
 
 QJsonObject ListItem::toJson() const {
@@ -57,4 +81,14 @@ QJsonObject ListItem::toJson() const {
     obj["subItems"] = subItems;
 
     return obj;
+}
+
+bool ListItem::operator==(const ListItem &other) const {
+    return title == other.title &&
+           description == other.description &&
+           priorityLevel == other.priorityLevel &&
+           startDate == other.startDate &&
+           dueDate == other.dueDate &&
+           completed == other.completed &&
+           tags == other.tags;
 }

@@ -4,15 +4,17 @@
 TagLabel::TagLabel(const Tag &tag, QWidget *parent)
     : QLabel(parent)
 {
-    qDebug() << "Tag label created"<<tag.getTagName();
-    this->setText(tag.getTagName());
+    setText(tag.getTagName());
+    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    adjustSize();
+
     setStyleSheet(QString(
                       "QLabel {"
                       "  border-radius: 8px;"
-                      "  background-color: hsl(%1, 100%, 80%);"
-                      "  border: 3px solid hsl(%1, 100%, 60%);"
+                      "  background-color: hsl(%1, %2%, 80%);"
+                      "  border: 3px solid hsl(%1, %2%, 60%);"
                       "  padding: 2px 8px;"
                       "  color: black;"
                       "}"
-                      ).arg(tag.getHue()));
+                      ).arg(tag.getHue()).arg(tag.getSaturation()));
 }

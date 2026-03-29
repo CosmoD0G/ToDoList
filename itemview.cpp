@@ -1,19 +1,24 @@
 #include "itemview.h"
 #include "listitem.h"
+#include "mainwindow.h"
 #include "subtaskview.h"
 #include "ui_itemview.h"
 #include "qboxlayout.h"
-
+#include "newitemform.h"
 #include "QEasingCurve.h"
 #include "qpropertyanimation.h"
 #include "taglabel.h"
 #include "QPainter.h"
+#include "QMessageBox"
+#include "QThread"
 
-ItemView::ItemView(QWidget *parent, const ListItem *l)
+ItemView::ItemView(QWidget *parent, const ListItem *l, MainWindow *m, int dataIndex)
     : QWidget(parent)
     , ui(new Ui::ItemView) {
     ui->setupUi(this);
 
+    mw = m;
+    listVar = *l;
     // set layout variables for ItemView widget
     // In ItemView constructor
     //setMinimumHeight(0);  // let the layout determine minimum, not a fixed value
@@ -28,28 +33,36 @@ ItemView::ItemView(QWidget *parent, const ListItem *l)
     bottomPanel->setMaximumHeight(0);  // start collapsed
     bottomPanel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     bottomPanel->setBackgroundRole(QPalette::AlternateBase);
-
+    // In ItemView constructor, after setupUi:
+    ui->frame->setMaximumWidth(300);
 
     QVBoxLayout *panelLayout = new QVBoxLayout(bottomPanel);
-    panelLayout->addWidget(new SubTaskView(this,new SubTask("subtask 1")));
-    panelLayout->addWidget(new SubTaskView(this,new SubTask("subtask 2")));
-    panelLayout->addWidget(new SubTaskView(this,new SubTask("subtask 3")));
-    panelLayout->addWidget(new SubTaskView(this,new SubTask("subtask 4")));
+    for (SubTask st : listVar.getSubTasks()) {
+       panelLayout->addWidget(new SubTaskView(this,&st));
+    }
 
 
 
 
 
+    ui->frame->setFrameShape(QFrame::NoFrame);
     // ... populate bottomPanel with your widgets ...
     ui->vertLayoutHeader->addWidget(bottomPanel, 0);  // stretch = 0, fixed height
-
+    ui->horiLayoutTLabels->parentWidget()->setFixedWidth(300);
     ui->txtTitle->setText(l->getTitle());
     ui->txtDue->setText(dueDateFormatting(l->getDueDate()));
     ui->txtStart->setText(startDateFormatting(l->getStartDate()));
     //ui->txtTag->setText(getTagHTML(l->getTags()));
     addTagLabels(*l);
 
-    paintGradient(QColor(59, 170, 255), QColor(194, 228, 255));
+    if (listVar.getCompleted()) {
+        ui->checkBox->setChecked(true);
+        paintGradient(QColor(99,117,90), QColor(125,125,125));
+    } else {
+        ui->checkBox->setChecked(false);
+        paintGradient(QColor(214,214,214), QColor(237,237,237));
+    }
+
     qDebug() << this->size();
 }
 
@@ -65,14 +78,16 @@ void ItemView::paintGradient(QColor c1, QColor c2) {
 }
 
 void ItemView::paintEvent(QPaintEvent *event) {
-    QLinearGradient gradient(0, 0, 400, 65);
+    //header
+    qDebug() << "painting "<<gradL<<" "<<gradR;
+    QLinearGradient gradient(0, 0, 450, 76);
     gradient.setColorAt(0.0, gradL);
     gradient.setColorAt(1.0,gradR);
 
     QPainter painter(this);
     painter.setBrush(QBrush(gradient));
     painter.setPen(Qt::NoPen);   // removes the default black border around the rect
-    painter.drawRect(0, 0, 400, 65);
+    painter.drawRect(0, 0, 450, 76);
 }
 
 void ItemView::animateGradient(int duration, QColor L1, QColor L2, QColor R1, QColor R2) {
@@ -110,6 +125,7 @@ void ItemView::addTagLabels(ListItem l) {
     for (Tag t : l.getTags()) {
         ui->horiLayoutTLabels->addWidget(new TagLabel(t,this));
     }
+    ui->horiLayoutTLabels->parentWidget()->setMaximumWidth(300);
 }
 
 void ItemView::on_toolButton_2_clicked() {
@@ -159,3 +175,40 @@ QString ItemView::startDateFormatting(QDate d) {
         return "<span style='color: black;'> Not yet ("+d.toString("MM/dd")+")</span>";
     }
 }
+
+void ItemView::on_toolButton_clicked() {
+
+}
+
+
+void ItemView::on_deleteButton_clicked()
+{
+    QMessageBox::StandardButton reply = QMessageBox::question(this, "Delete Item?", "Are you sure you want to delete this item? This cannot be undone",QMessageBox::Yes | QMessageBox::No);
+
+    if (reply == QMessageBox::Yes) {
+        qDebug() << "reply yes confirmed";
+        qDebug() << "listVar:" << &listVar;
+        qDebug() << "activeUser:" << mw->getActiveUser();
+        mw->getActiveUser()->removeListItem(listVar);
+    } else {
+        // no
+    }
+    mw->updateFromUserData();
+}
+
+
+void ItemView::on_checkBox_clicked(bool checked) {
+    if (checked) {
+        paintGradient(QColor(99,117,90), QColor(125,125,125));
+        update();
+        QThread::msleep(750);
+        mw->getActiveUser()->setCompleted(listVar, true);
+        mw->updateFromUserData();
+    } else {
+        paintGradient(QColor(214,214,214), QColor(237,237,237));
+        update();
+        mw->getActiveUser()->setCompleted(listVar, false);
+        mw->updateFromUserData();
+    }
+}
+

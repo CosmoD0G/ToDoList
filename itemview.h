@@ -2,6 +2,7 @@
 #define ITEMVIEW_H
 
 #include "listitem.h"
+#include "mainwindow.h"
 #include <QWidget>
 
 namespace Ui {
@@ -13,7 +14,7 @@ class ItemView : public QWidget
     Q_OBJECT
 
 public:
-    explicit ItemView(QWidget *parent = nullptr, const ListItem *l = nullptr);
+    explicit ItemView(QWidget *parent = nullptr, const ListItem *l = nullptr, MainWindow *m = nullptr, int dataIndex = 0);
     ~ItemView();
     void toggleBottomPanel();
     QString dueDateFormatting(QDateTime dt);
@@ -27,6 +28,12 @@ private slots:
 
     void on_toolButton_2_clicked();
 
+    void on_toolButton_clicked();
+
+    void on_deleteButton_clicked();
+
+    void on_checkBox_clicked(bool checked);
+
 protected:
     void paintEvent(QPaintEvent *event) override;
 
@@ -37,6 +44,9 @@ private:
 
     QColor gradL = Qt::white;
     QColor gradR = Qt::white;
+    MainWindow *mw;
+    ListItem  listVar;
+    int dataIndex;
 };
 
 #endif // ITEMVIEW_H

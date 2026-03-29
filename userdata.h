@@ -14,7 +14,13 @@ public:
     bool userTagExists(Tag t);
     bool saveToFile();
     bool loadFromFile();
-    void addTag(Tag t);
+    bool addTag(Tag t);
+    int getHueFromTagName(QString tagName);
+    int getSaturationFromTagName(QString tagName);
+    void removeListItem(ListItem l);
+    void setIndex(int index, ListItem l);
+    void removeTag(Tag t);
+    void setCompleted(ListItem l, bool completed);
 
 private:
     QString username;

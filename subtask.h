@@ -7,7 +7,7 @@
 class SubTask
 {
 public:
-    SubTask(QString s);
+    SubTask(QString s, bool c = false);
     QJsonObject toJson() const;
     QString getTitle() const;
 

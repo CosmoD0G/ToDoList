@@ -9,13 +9,14 @@ class Tag
 {
 public:
     Tag() : name(""), hue(0) {}  // default constructor required by QVariant
-    Tag(QString t, int h);
+    Tag(QString t, int h, int s = 100);
 
     QString getTagName() const;
-    void setTagName();
+    void setTagName(QString n);
     int getHue() const;
-    QColor getColor();
-    void setColor(QColor c);
+    void setHue(int h);
+    int getSaturation() const;
+    void setSaturation(int s);
     QJsonObject toJson() const;
     QString getBasicHTML() const;
 
@@ -26,6 +27,7 @@ public:
 private:
     QString name;
     int hue;
+    int saturation;
 
 };
 

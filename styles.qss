@@ -3,14 +3,14 @@ QCheckBox {
 }
 
 QCheckBox::indicator {
-    width: 20px;
-    height: 20px;
-    border-radius: 10px;  /* Half of width/height to make it a circle */
-    border: 2px solid #999999;
+    width: 16px;
+    height: 16px;
+
+    border: 2px solid #444444;
     background-color: #ffffff;  /* Unchecked color */
 }
 
 QCheckBox::indicator:checked {
-    background-color: #4CAF50;  /* Checked color */
+    background-color: #94ff97;  /* Checked color */
     border-color: #4CAF50;
 }

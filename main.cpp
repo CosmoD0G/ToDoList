@@ -76,8 +76,7 @@ int main(int argc, char *argv[])
     w.show();
 
 
-    TagEditor e;
-    e.show();
+
 
 
 
